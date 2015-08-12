@@ -1,4 +1,4 @@
-# vim:ft=ansible:
+# vim:ft=ansible
 ---
 - hosts: packstacktest
   tasks:
@@ -110,7 +110,7 @@
                backup=yes
      tags: docker
 
-# add code for RHBZ 997290
+# added workaround for RHBZ 997290 - making sure glance ini files are not empty
    - name: Copying glance-registry-dist-paste.ini files as per RHBZ 997290
      command: cp /usr/share/glance/glance-registry-dist-paste.ini  /etc/glance/glance-registry-paste.ini
      tags: 
@@ -138,3 +138,19 @@
    - name: restarting openstack services
      command: openstack-service restart
      tags: docker 
+
+# download a known-good container and save it to glance
+
+   - name: Pulling rastasheep/ubuntu-sshd
+     command: docker pull rastasheep/ubuntu-sshd
+     tags:
+       - docker
+       - container_test
+
+# TODO: variable container version number? more efficient 
+# using 'shell' instead of 'command' to ensure pipe is used correctly
+   - name: Saving container to glance
+     shell: source /root/keystonerc_admin && docker save rastasheep/ubuntu-sshd | glance image-create --is-public=True --container-format=docker --disk-format=raw --name rastasheep/ubuntu-sshd:14.04
+     tags:
+       - docker
+       - container_test
