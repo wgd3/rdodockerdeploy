@@ -1,0 +1,110 @@
+# vim:ft=ansible:
+---
+- hosts: packstacktest
+  tasks:
+   - name: run yum update
+     yum: name=* state=latest
+     tags: yum
+
+   - name: install rdo-release repo
+     yum: name=https://rdoproject.org/repos/rdo-release.rpm state=present 
+     tags: yum
+
+   - name: install needed packages
+     yum: name={{ item }} state=latest
+     with_items:
+        - epel-release
+        - python-pip
+        - git
+        - openstack-packstack
+     tags:
+        - yum
+
+   - name: stopping NetworkManager and starting network.service
+     service: name=NetworkManager state=stopped
+     tags: nm
+
+   - name: disable NetworkManager
+     service: name=NetworkManager enabled=no
+     tags: nm
+
+   - name: start network.service
+     service: name=network.service state=started
+     tags: nm
+
+   - name: enable network.service
+     service: name=network.service enabled=yes
+     tags: nm
+
+   - name: install packstack allinone
+     command: packstack --debug --allinone --ntp-servers=clock.redhat.com --provision-demo=n
+     tags: packstack
+
+   - name: install docker
+     shell: "curl -sSL https://get.docker.com/ | sh"
+     tags: docker
+
+   - name: start the docker service
+     command: service docker start
+     tags: docker
+
+   - name: test docker
+     command: docker run hello-world
+     tags: docker
+
+   - name: add nova to docker group
+     command: usermod -G docker nova
+     tags: docker
+
+   - name: restarting nova-compute
+     service: name=openstack-nova-compute state=restarted
+     tags: docker
+
+   - name: installing novadocker driver
+     command: pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker
+     tags: docker
+
+   - name: installing novadocker modules
+     command: python setup.py install
+     args: 
+       chdir: src/novadocker/
+     tags: docker
+
+   - name: updating compute driver
+     ini_file: dest=/etc/nova/nova.conf
+               section=DEFAULT
+               option=compute_driver
+               value=novadocker.virt.docker.DockerDriver
+               backup=yes 
+     tags: docker
+
+   - name: changing hypervisor type to docker
+     ini_file: dest=/etc/nova/nova.conf
+               section=DEFAULT
+               option=virt_type
+               value=docker
+               backup=yes
+     tags: docker
+
+# need to make sure to account for hv_type.py code changes in launchpad bug 1461217             
+
+   - name: creating rootwrap.d folder
+     command: mkdir -p /etc/nova/rootwrap.d
+     tags: docker
+
+   - name: copying docker filter file
+     copy: src=docker.filters dest=/etc/nova/rootwrap.d/docker.filters owner=root mode="u=rw"
+     tags: docker
+
+   - name: configuring glance with docker
+     ini_file: dest=/etc/glance/glance-api.conf
+               section=DEFAULT
+               option=container_formats
+               value=ami,ari,aki,bare,ovf,docker
+               backup=yes
+     tags: docker
+
+# add code for RHBZ 997290
+   - name: restarting openstack services
+     command: openstack-service restart
+     tags: docker 
