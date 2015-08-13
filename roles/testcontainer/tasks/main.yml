@@ -1,0 +1,16 @@
+# vim:ft=ansible
+---
+# download a known-good container and save it to glance
+- name: Pulling rastasheep/ubuntu-sshd
+  command: docker pull rastasheep/ubuntu-sshd
+  tags:
+   - docker
+   - container_test
+
+# TODO: variable container version number? more efficient 
+# using 'shell' instead of 'command' to ensure pipe is used correctly
+- name: Saving container to glance
+  shell: source /root/keystonerc_admin && docker save rastasheep/ubuntu-sshd | glance image-create --is-public=True --container-format=docker --disk-format=raw --name rastasheep/ubuntu-sshd:latest
+  tags:
+   - docker
+   - container_test

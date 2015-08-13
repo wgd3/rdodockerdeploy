@@ -6,3 +6,5 @@
   max_fail_percentage: 0
   roles:
     - allinone
+    - docker
+    - testcontainer
