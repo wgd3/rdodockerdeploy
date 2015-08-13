@@ -1,0 +1,8 @@
+---
+
+- name: create allinone with docker hypervisor
+  gather_facts: true
+  hosts: packstacktest
+  max_fail_percentage: 0
+  roles:
+    - allinone
