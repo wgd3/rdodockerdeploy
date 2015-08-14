@@ -1,16 +1,83 @@
 # vim:ft=ansible
 ---
 # download a known-good container and save it to glance
-- name: Pulling rastasheep/ubuntu-sshd
-  command: docker pull rastasheep/ubuntu-sshd
+- name: Pulling {{ container_image }}
+  command: docker pull {{ container_image }}
   tags:
    - docker
    - container_test
 
-# TODO: variable container version number? more efficient 
+# TODO: variable container version number? more efficient
 # using 'shell' instead of 'command' to ensure pipe is used correctly
 - name: Saving container to glance
-  shell: source /root/keystonerc_admin && docker save rastasheep/ubuntu-sshd | glance image-create --is-public=True --container-format=docker --disk-format=raw --name rastasheep/ubuntu-sshd:latest
+  shell: source {{ keystone_filename }} && docker save {{ container_image }} | glance image-create --is-public=True --container-format=docker --disk-format=raw --name {{ glance_imagename }}
   tags:
    - docker
    - container_test
+
+ # check neutron for an existing 'testnet' network
+- name: Check if 'testnet' exists
+  shell: . {{ keystone_filename }}; neutron net-show testnet
+  ignore_errors: true
+  register: net_check
+  tags:
+    - neutron
+    - container_test
+
+- name: Creating testnet
+  shell: >
+    . {{ keystone_filename }};
+    neutron net-create {{ neutron_netname }}
+  register: net_create
+  when: net_check|failed
+  tags:
+    - neutron
+    - container_test
+
+- name: Check if 'testnet-subnet' exists
+  shell: . {{ keystone_filename }}; neutron net-show testnet
+  ignore_errors: true
+  register: subnet_check
+  tags:
+    - neutron
+    - container_test
+
+- name: create testnet subnet
+  shell: . {{ keystone_filename }}; neutron subnet-create --name={{ neutron_subnetname }} {{ neutron_netname }} {{ neutron_subnetcidr }}
+  when: subnet_check|failed
+  tags:
+    - neutron
+    - container_test
+
+# store testnet uuid
+- name: get testnet uuid
+  shell: . {{ keystone_filename }}; neutron net-list | grep {{ neutron_netname }} | gawk -F' ' '{print $2}'
+  register: testnet_uuid
+  tags:
+    - neutron
+    - container_test
+
+- debug: msg="testnet network has UUID {{ testnet_uuid.stdout }}"
+  when: testnet_uuid is defined
+  tags:
+    - neutron
+    - container_test
+
+- name: get container image uuid
+  shell: . {{ keystone_filename }}; glance image-list | grep {{ glance_imagename }} | gawk -F' ' '{print $2}'
+  register: image_uuid
+  tags:
+    - glance
+    - container_test
+
+- debug: msg="glance image has UUID {{ image_uuid.stdout }}"
+  when: image_uuid is defined
+  tags:
+    - glance
+    - container_test
+
+- name: create test docker instance
+  shell: . {{ keystone_filename }}; nova boot --flavor {{ nova_bootflavor }} --image {{ image_uuid.stdout }} --nic net-id={{ testnet_uuid.stdout }} {{ nova_bootname }}
+  tags:
+    - nova
+    - container_test

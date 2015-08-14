@@ -1,0 +1,8 @@
+container_image: rastasheep/ubuntu-sshd
+neutron_netname: testnet
+neutron_subnetname: testnet-subnet
+neutron_subnetcidr: 10.0.0.0/24
+glance_imagename: rastasheep/ubuntu-sshd:latest
+nova_bootflavor: 1
+nova_bootname: ansible_docker_instance
+keystone_filename: /root/keystonerc_admin

@@ -2,10 +2,12 @@
 ---
 - name: run yum update
   yum: name=* state=latest
-  tags: yum
+  tags:
+    - yum
+    - yum_update
 
 - name: install rdo-release repo
-  yum: name=https://rdoproject.org/repos/rdo-release.rpm state=present 
+  yum: name=https://rdoproject.org/repos/rdo-release.rpm state=present
   tags: yum
 
 - name: install needed packages

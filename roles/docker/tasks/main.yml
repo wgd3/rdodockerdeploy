@@ -26,7 +26,7 @@
 
 - name: installing novadocker modules
   command: python setup.py install
-  args: 
+  args:
     chdir: src/novadocker/
   tags: docker
 
@@ -35,7 +35,7 @@
             section=DEFAULT
             option=compute_driver
             value=novadocker.virt.docker.DockerDriver
-            backup=yes 
+            backup=yes
   tags: docker
 
 - name: changing hypervisor type to docker
@@ -46,7 +46,17 @@
            backup=yes
   tags: docker
 
-# need to make sure to account for hv_type.py code changes in launchpad bug 1461217             
+- name: set debug to true for nova debugging purposes
+  ini_file: dest=/etc/nova/nova.conf
+            section=DEFAULT
+            option=debug
+            value=True
+            backup=yes
+  tags:
+    - nova
+    - docker
+
+# need to make sure to account for hv_type.py code changes in launchpad bug 1461217
 - name: copying modified /usr/lib/python2.7/site-packages/nova/compute/hv_type.py as per LPBZ1461217
   copy: src=hv_type.py dest=/usr/lib/python2.7/site-packages/nova/compute/hv_type.py owner=root force=yes backup=yes mode=0644
   tags:
@@ -73,17 +83,17 @@
 # added workaround for RHBZ 997290 - making sure glance ini files are not empty
 - name: Copying glance-registry-dist-paste.ini files as per RHBZ 997290
   command: cp /usr/share/glance/glance-registry-dist-paste.ini  /etc/glance/glance-registry-paste.ini
-  tags: 
+  tags:
     - docker
-    - bz997290     
+    - bz997290
 
-- name: Copying glance-api-dist-paste.ini as per RHBZ 997290    
+- name: Copying glance-api-dist-paste.ini as per RHBZ 997290
   command: cp /usr/share/glance/glance-api-dist-paste.ini  /etc/glance/glance-api-paste.ini
   tags:
     - docker
     - bz997290
 
-- name: Changing permissions of previous ini files    
+- name: Changing permissions of previous ini files
   command: chmod 640 /etc/glance/glance-registry-paste.ini /etc/glance/glance-api-paste.ini
   tags:
     - docker
@@ -91,7 +101,7 @@
 
 - name: Changing ownership of ini files
   command: chown root.glance /etc/glance/glance-registry-paste.ini /etc/glance/glance-api-paste.ini
-  tags: 
+  tags:
     - bz997290
     - docker
 
@@ -108,5 +118,4 @@
 
 - name: restarting openstack services
   command: openstack-service restart
-  tags: docker 
-
+  tags: docker
