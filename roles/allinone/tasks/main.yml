@@ -38,4 +38,9 @@
 
 - name: install packstack allinone
   command: packstack --debug --allinone --provision-demo=n
+  register: packstack_details
+  tags: packstack
+
+- debug: msg="{{ packstack_details.stdout }}"
+  when: packstack_details|success
   tags: packstack

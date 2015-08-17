@@ -35,7 +35,7 @@
     - container_test
 
 - name: Check if 'testnet-subnet' exists
-  shell: . {{ keystone_filename }}; neutron net-show testnet
+  shell: . {{ keystone_filename }}; neutron subnet-show {{ neutron_subnetname }}
   ignore_errors: true
   register: subnet_check
   tags:
