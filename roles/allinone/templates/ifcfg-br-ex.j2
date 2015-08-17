@@ -1,0 +1,10 @@
+DEVICE={{ neutron_ext_bridge }}
+DEVICETYPE=ovs
+TYPE=OVSBridge
+ONBOOT=yes
+MACADDR=08:00:27:62:b6:9a
+OVSEXTRA="set bridge $DEVICE other-config:hwaddr=$MACADDR"
+
+# allow the external bridge to work with DHCP
+OVSBOOTPROTO=dhcp
+OVSDHCPINTERFACES=enp0s3

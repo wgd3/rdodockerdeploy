@@ -36,11 +36,56 @@
   service: name=network.service enabled=yes
   tags: nm
 
+- name: transfer answers file
+  template: src=answers.txt.j2 dest=/root/answers.txt
+  register: answers_file_rx
+  tags:
+    - packstack
+
+- debug: msg="Successfully copied answer file. Using {{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }} as IP address."
+  when: answers_file_rx|success
+  tags:
+    - packstack
+
 - name: install packstack allinone
   command: packstack --debug --allinone --provision-demo=n
+### Commenting out the answer file until I can fix the IP address dissappearing during deployment
+#  command: packstack --debug --answer-file=answers.txt
   register: packstack_details
   tags: packstack
 
-- debug: msg="{{ packstack_details.stdout }}"
+- name: updating bridge mappings
+  shell: openstack-config --set /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini ovs bridge_mappings physnet1:br-ex
+  tags:
+    - neutron
+    - packstack
+
+- name: updating ML2 type drivers
+  shell: openstack-config --set /etc/neutron/plugin.ini ml2 type_drivers vxlan,flat,vlan
+  tags:
+    - neutron
+    - packstack
+
+# copy over ifcfg files and reconfigure network for flat provider network with DHCP support
+- name: transferring ifcfg for main interface
+  template: src=ifcfg-physical.j2 dest={{ neutron_dest_phys_iface }}
+  tags:
+    - packstack
+    - ifcfg
+
+- name: transferring ifcfg for external bridge
+  template: src=ifcfg-br-ex.j2 dest={{ neutron_dest_ext_iface }}
+  tags:
+    - packstack
+    - ifcfg
+
+- debug: msg="Successfully installed packstack! Restarting network services"
   when: packstack_details|success
   tags: packstack
+
+- name: Restarting neutron and OVS
+  service: name={{ item }} state=restarted
+  with_items:
+    - network
+    - neutron-openvswitch-agent
+    - neutron-server

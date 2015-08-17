@@ -8,9 +8,9 @@
   command: service docker start
   tags: docker
 
-- name: test docker
-  command: docker run hello-world
-  tags: docker
+#- name: test docker
+#  command: docker run hello-world
+#  tags: docker
 
 - name: add nova to docker group
   command: usermod -G docker nova

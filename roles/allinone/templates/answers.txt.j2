@@ -84,12 +84,12 @@ CONFIG_CONTROLLER_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_
 
 # List of IP addresses of the servers on which to install the Compute
 # service.
-CONFIG_COMPUTE_HOSTS={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_COMPUTE_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # List of IP addresses of the server on which to install the network
 # service such as Compute networking (nova network) or OpenStack
 # Networking (neutron).
-CONFIG_NETWORK_HOSTS={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_NETWORK_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' if you want to use VMware vCenter as hypervisor and
 # storage; otherwise, specify 'n'. ['y', 'n']
@@ -125,11 +125,11 @@ CONFIG_VCENTER_CLUSTER_NAME=
 # (Unsupported!) IP address of the server on which to install
 # OpenStack services specific to storage servers such as Image or
 # Block Storage services.
-CONFIG_STORAGE_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_STORAGE_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # (Unsupported!) IP address of the server on which to install
 # OpenStack services specific to OpenStack Data Processing (sahara).
-CONFIG_SAHARA_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_SAHARA_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' to enable the EPEL repository (Extra Packages for
 # Enterprise Linux). ['y', 'n']
@@ -251,7 +251,7 @@ CONFIG_SELFSIGN_CACERT_SUBJECT_MAIL=admin@packstacktest.example.com
 CONFIG_AMQP_BACKEND=rabbitmq
 
 # IP address of the server on which to install the AMQP service.
-CONFIG_AMQP_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_AMQP_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' to enable SSL for the AMQP service. ['y', 'n']
 CONFIG_AMQP_ENABLE_SSL=n
@@ -273,7 +273,7 @@ CONFIG_AMQP_AUTH_PASSWORD=PW_PLACEHOLDER
 # installation was not specified in CONFIG_MARIADB_INSTALL, specify
 # the IP address of an existing database server (a MariaDB cluster can
 # also be specified).
-CONFIG_MARIADB_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_MARIADB_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # User name for the MariaDB administrative user.
 CONFIG_MARIADB_USER=root
@@ -310,7 +310,7 @@ CONFIG_KEYSTONE_API_VERSION=v2.0
 
 # Identity service token format (UUID or PKI). The recommended format
 # for new deployments is UUID. ['UUID', 'PKI']
-CONFIG_KEYSTONE_TOKEN_FORMAT=UUID
+CONFIG_KEYSTONE_TOKEN_FORMAT={{ keystone_token_type }}
 
 # Name of service to use to run the Identity service (keystone or
 # httpd). ['keystone', 'httpd']
@@ -320,7 +320,7 @@ CONFIG_KEYSTONE_SERVICE_NAME=keystone
 CONFIG_KEYSTONE_IDENTITY_BACKEND=sql
 
 # URL for the Identity service LDAP backend.
-CONFIG_KEYSTONE_LDAP_URL=ldap://{{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_KEYSTONE_LDAP_URL=ldap://{{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # User DN for the Identity service LDAP backend.  Used to bind to the
 # LDAP server if the LDAP server does not allow anonymous
@@ -770,7 +770,6 @@ CONFIG_MANILA_NETWORK_STANDALONE_SEG_ID=
 # used. If empty, then will be assumed that all host addresses from
 # network can be used. Optional. Examples: 10.0.0.10 or
 # 10.0.0.10-10.0.0.20 or
-# 10.0.0.10-10.0.0.20,10.0.0.30-{{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}0,10.0.0.50. Defaults to ''.
 CONFIG_MANILA_NETWORK_STANDALONE_IP_RANGE=
 
 # IP version of network. Optional. Defaults to '4'. ['4', '6']
@@ -864,7 +863,7 @@ CONFIG_NEUTRON_DB_PW=d9db84af62a14cd5
 # the OpenStack Networking L3 agent to use for external  traffic.
 # Specify 'provider' if you intend to use a provider network to handle
 # external traffic.
-CONFIG_NEUTRON_L3_EXT_BRIDGE=br-ex
+CONFIG_NEUTRON_L3_EXT_BRIDGE={{ neutron_ext_bridge }}
 
 # Password for the OpenStack Networking metadata agent.
 CONFIG_NEUTRON_METADATA_PW=39306f5db29540e2
@@ -884,7 +883,7 @@ CONFIG_NEUTRON_FWAAS=n
 # Comma-separated list of network-type driver entry points to be
 # loaded from the neutron.ml2.type_drivers namespace. ['local',
 # 'flat', 'vlan', 'gre', 'vxlan']
-CONFIG_NEUTRON_ML2_TYPE_DRIVERS=vxlan
+CONFIG_NEUTRON_ML2_TYPE_DRIVERS={{ neutron_ml2_type_drivers }}
 
 # Comma-separated, ordered list of network types to allocate as
 # tenant networks. The 'local' value is only useful for single-box
@@ -940,7 +939,7 @@ CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
 # Networking Open vSwitch plugin. Each tuple in the list must be in
 # the format <physical_network>:<ovs_bridge>. Example: physnet1:br-
 # eth1,physnet2:br-eth2,physnet3:br-eth3
-CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=
+CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS={{ neutron_ovs_bridge_mappings }}
 
 # Comma-separated list of colon-separated Open vSwitch
 # <bridge>:<interface> pairs. The interface will be added to the
@@ -951,7 +950,7 @@ CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=
 # issuing the following command: packstack --allinone --os-neutron-
 # ovs-bridge-mappings=ext-net:br-ex --os-neutron-ovs-bridge-interfaces
 # =br-ex:eth0
-CONFIG_NEUTRON_OVS_BRIDGE_IFACES=
+CONFIG_NEUTRON_OVS_BRIDGE_IFACES={{ neutron_ovs_bridge_ifaces }}
 
 # Interface for the Open vSwitch tunnel. Packstack overrides the IP
 # address used for tunnels on this hypervisor to the IP found on the
@@ -1038,7 +1037,7 @@ CONFIG_HEAT_DOMAIN_ADMIN=heat_admin
 CONFIG_HEAT_DOMAIN_PASSWORD=PW_PLACEHOLDER
 
 # Specify 'y' to provision for demo usage and testing. ['y', 'n']
-CONFIG_PROVISION_DEMO=n
+CONFIG_PROVISION_DEMO={{ config_demo }}
 
 # Specify 'y' to configure the OpenStack Integration Test Suite
 # (tempest) for testing. The test suite requires OpenStack Networking
@@ -1096,11 +1095,11 @@ CONFIG_CEILOMETER_KS_PW=7a065263717f4822
 CONFIG_CEILOMETER_COORDINATION_BACKEND=redis
 
 # IP address of the server on which to install MongoDB.
-CONFIG_MONGODB_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_MONGODB_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # IP address of the server on which to install the Redis master
 # server.
-CONFIG_REDIS_MASTER_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_REDIS_MASTER_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Port on which the Redis server(s) listens.
 CONFIG_REDIS_PORT=6379
@@ -1109,13 +1108,13 @@ CONFIG_REDIS_PORT=6379
 CONFIG_REDIS_HA=n
 
 # Hosts on which to install Redis slaves.
-CONFIG_REDIS_SLAVE_HOSTS={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_REDIS_SLAVE_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Hosts on which to install Redis sentinel servers.
-CONFIG_REDIS_SENTINEL_HOSTS={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_REDIS_SENTINEL_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Host to configure as the Redis coordination sentinel.
-CONFIG_REDIS_SENTINEL_CONTACT_HOST={{ hostvars[groups[packstacktest][0]][ansible_default_ipv4][address] }}
+CONFIG_REDIS_SENTINEL_CONTACT_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
 
 # Port on which Redis sentinel servers listen.
 CONFIG_REDIS_SENTINEL_PORT=26379

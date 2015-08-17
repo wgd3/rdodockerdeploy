@@ -2,6 +2,16 @@ container_image: rastasheep/ubuntu-sshd
 neutron_netname: testnet
 neutron_subnetname: testnet-subnet
 neutron_subnetcidr: 10.0.0.0/24
+neutron_ext_net_name: external
+neutron_ext_subnet_name: external-subnet
+neutron_ext_gateway: 192.168.2.1
+neutron_ext_allocation:
+  start: 192.168.2.100
+  end: 192.168.2.150
+neutron_ext_subnet_cidr: 192.168.2.0/24
+neutron_router_name: testrouter
+neutron_ext_network_type: flat
+neutron_flat_net_name: physnet1
 glance_imagename: rastasheep/ubuntu-sshd:latest
 nova_bootflavor: 1
 nova_bootname: ansible_docker_instance
