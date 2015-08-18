@@ -5,6 +5,7 @@
   hosts: packstacktest
   max_fail_percentage: 0
   roles:
+    - rhsm
     - allinone
     - docker
     - testcontainer

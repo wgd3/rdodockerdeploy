@@ -1,1 +1,3 @@
 playwrite.sh
+*DS_Store
+rhsm/defaults/main.yml

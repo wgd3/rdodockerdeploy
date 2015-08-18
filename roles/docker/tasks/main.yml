@@ -20,15 +20,31 @@
   service: name=openstack-nova-compute state=restarted
   tags: docker
 
-- name: installing novadocker driver
-  command: pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker
+- name: installing novadocker driver (for RDO bits)
+  shell: pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker
+  when: openstack_bits == 'rdo'
   tags: docker
 
-- name: installing novadocker modules
+- name: installing novadocker modules (for RDO bits)
   command: python setup.py install
   args:
     chdir: src/novadocker/
+  when: openstack_bits == 'rdo'
   tags: docker
+
+- name: cloning nova-docker repo from github (for RHELOSP bits)
+  shell: git clone https://github.com/stackforge/nova-docker.git
+  when: openstack_bits == 'rhelosp'
+  tags:
+    - docker
+
+- name: installing nova-docker from cloned repo (for RHELOSP bits)
+  shell: python setup.py install
+  args:
+    chdir: nova-docker/
+  when: openstack_bits == 'rhelosp'
+  tags:
+    - docker
 
 - name: updating compute driver
   ini_file: dest=/etc/nova/nova.conf

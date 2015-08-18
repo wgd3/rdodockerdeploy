@@ -1,0 +1,12 @@
+---
+- name: handling registration with RHSM
+  include: rhelosp.yml
+  when: openstack_bits == 'rhelosp'
+  tags:
+    - rhsm
+
+- name: handling upstream repo configuration
+  include: rdo.yml
+  when: openstack_bits == 'rdo'
+  tags:
+    - rhsm

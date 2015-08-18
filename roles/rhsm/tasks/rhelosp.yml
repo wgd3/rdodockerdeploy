@@ -1,0 +1,53 @@
+---
+- name: register to RHSM
+  redhat_subscription:
+    state: present
+    username: "{{ rhn_user }}"
+    password: "{{ rhn_password }}"
+# TODO: This seemed to not set automatically in previous runs, running manually after registration
+#   pool: "{{ rhn_pool }}"
+  tags:
+    - rhsm
+
+- name: attaching pool to RHSM
+  shell: "subscription-manager attach --pool {{ rhn_pool }}"
+  ignore_errors: true
+  register: rhsm_pool_attach
+  failed_when: "'already' not in rhsm_pool_attach"
+  tags:
+    - rhsm
+
+- name: enable repos
+  shell: "subscription-manager repos --list-enabled | grep 'Repo ID:   {{ item }}' || subscription-manager repos --enable={{ item }}"
+  with_items:
+    - rhel-7-server-rpms
+#    - rhel-7-server-openstack-6.0-rpms
+    - rhel-server-rhscl-7-rpms
+    - rhel-ha-for-rhel-7-server-rpms
+    - rhel-7-server-optional-rpms
+  register: result
+  changed_when: result.stdout.find('enabled') != -1
+  tags:
+    - rhsm
+
+- name: enabling juno RHELOSP repo
+  shell: subscription-manager repos --enable=rhel-7-server-openstack-6.0-rpms
+  when: openstack_release == 'juno'
+  tags:
+    - rhsm
+
+- name: enabling kilo RHELOSP repo
+  shell: subscription-manager repos --enable=rhel-7-server-openstack-7.0-rpms
+  when: openstack_release == 'kilo'
+  tags:
+    - rhsm
+
+# manually installing pip here since it has a different package name than upstream
+- name: installing python-pip from the RHSCL repo
+  yum: name={{ item }} state=latest
+  with_items:
+    - python27-python-devel
+    - python27-python-pip
+  tags:
+    - yum
+    - rhsm

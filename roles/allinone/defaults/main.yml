@@ -15,9 +15,9 @@ keystone_token_type: UUID
 # neutron
 neutron_ext_bridge: br-ex
 neutron_ovs_bridge_mappings: "physnet1:br-ex"
-neutron_ovs_bridge_ifaces: "br-ex:enp0s3"
+neutron_ovs_bridge_ifaces: "br-ex:{{ primary_if }}"
 neutron_ml2_type_drivers: vxlan, flat
-neutron_dest_phys_iface: /etc/sysconfig/network-scripts/ifcfg-enp0s3
+neutron_dest_phys_iface: "/etc/sysconfig/network-scripts/ifcfg-{{ primary_if }}"
 neutron_dest_ext_iface: /etc/sysconfig/network-scripts/ifcfg-{{ neutron_ext_bridge }}
 
 # demo

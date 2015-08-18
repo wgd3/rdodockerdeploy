@@ -1,0 +1,14 @@
+---
+### Global config options
+
+# select openstack release: juno, kilo
+openstack_release: juno
+
+# select rhelosp or rdo bits (only kilo with rdo)
+openstack_bits: rhelosp
+
+# ntp servers
+ntp:
+  - 0.rhel.pool.ntp.org
+  - 1.rhel.pool.ntp.org
+  - 2.rhel.pool.ntp.org

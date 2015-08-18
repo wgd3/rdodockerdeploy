@@ -1,0 +1,11 @@
+- name: install rdo-release repo (if using RDO)
+  yum: name=https://rdoproject.org/repos/rdo-release.rpm state=present
+  tags: yum
+
+- name: install needed packages (if using RDO)
+  yum: name={{ item }} state=latest
+  with_items:
+    - epel-release
+    - python-pip
+  tags:
+    - yum

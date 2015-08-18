@@ -6,17 +6,12 @@
     - yum
     - yum_update
 
-- name: install rdo-release repo
-  yum: name=https://rdoproject.org/repos/rdo-release.rpm state=present
-  tags: yum
-
-- name: install needed packages
+- name: installing openstack-packstack packages
   yum: name={{ item }} state=latest
   with_items:
-    - epel-release
-    - python-pip
-    - git
     - openstack-packstack
+    - git
+    - python-devel
   tags:
     - yum
 
@@ -53,6 +48,11 @@
 #  command: packstack --debug --answer-file=answers.txt
   register: packstack_details
   tags: packstack
+
+- debug: var=hostvars[groups['packstacktest'][0]].ansible_default_ipv4
+  tags:
+    - neutron
+    - packstack
 
 - name: updating bridge mappings
   shell: openstack-config --set /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini ovs bridge_mappings physnet1:br-ex
