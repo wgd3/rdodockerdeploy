@@ -1,3 +1,4 @@
 playwrite.sh
 *DS_Store
 vault_pass.txt
+roles/rhsm/defaults/main.yml
