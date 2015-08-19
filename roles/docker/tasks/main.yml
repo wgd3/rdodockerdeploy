@@ -32,16 +32,37 @@
   when: openstack_bits == 'rdo'
   tags: docker
 
-- name: cloning nova-docker repo from github (for RHELOSP bits)
-  shell: git clone https://github.com/stackforge/nova-docker.git
+# Testing for RHELOSP version - need to get the SCL PATH included
+# - name: cloning nova-docker repo from github (for RHELOSP bits)
+#   shell: git clone https://github.com/stackforge/nova-docker.git
+#   when: openstack_bits == 'rhelosp'
+#   tags:
+#     - docker
+
+# - name: installing nova-docker from cloned repo (for RHELOSP bits)
+#   shell: python setup.py install
+#   args:
+#     chdir: nova-docker/
+#   when: openstack_bits == 'rhelosp'
+#   tags:
+#     - docker
+
+- name: running pip install novadocker (for RHELOSP bits)
+  shell: scl enable python27 'pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker'
   when: openstack_bits == 'rhelosp'
   tags:
     - docker
 
-- name: installing nova-docker from cloned repo (for RHELOSP bits)
-  shell: python setup.py install
+- name: clone python-pbr from git.openstack.org (for RHELOSP bits)
+  shell: git clone https://git.openstack.org/openstack-dev/pbr
+  when: openstack_bits == 'rhelosp'
+  tags:
+    - docker
+
+- name: installing cloned python-pbr module
+  command: pyhton setup.py install
   args:
-    chdir: nova-docker/
+    chdir: pbr
   when: openstack_bits == 'rhelosp'
   tags:
     - docker
