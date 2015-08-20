@@ -53,16 +53,18 @@
   tags:
     - docker
 
-- name: clone python-pbr from git.openstack.org (for RHELOSP bits)
-  shell: git clone https://git.openstack.org/openstack-dev/pbr
+# decided to simply add the EPEL repo to RHEL7 since the noav-docker driver isn't
+# supported by Red Hat anyway
+- name: adding EPEL7 repo (for RHELOSP bits)
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm state=present
   when: openstack_bits == 'rhelosp'
   tags:
     - docker
 
-- name: installing cloned python-pbr module
-  command: pyhton setup.py install
-  args:
-    chdir: pbr
+- name: installing python-pbr from EPEL repo (for RHELOSP bits)
+  yum: name={{ item }} state=present
+  with_items:
+    - python-pbr
   when: openstack_bits == 'rhelosp'
   tags:
     - docker

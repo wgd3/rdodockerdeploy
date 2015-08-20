@@ -31,25 +31,36 @@
   service: name=network.service enabled=yes
   tags: nm
 
-- name: transfer answers file
-  template: src=answers.txt.j2 dest=/root/answers.txt
-  register: answers_file_rx
+### Disabling answer file until --allinone is no longer used ###
+
+# - name: transfer answers file
+#   template: src=answers.txt.j2 dest=/root/answers.txt
+#   register: answers_file_rx
+#   tags:
+#     - packstack
+#
+# - debug: msg="Successfully copied answer file. Using {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} as IP address."
+#   when: answers_file_rx|success
+#   tags:
+#     - packstack
+
+#################################################################
+
+- name: pre-packstack debug output
+  debug: var=hostvars[inventory_hostname]
   tags:
     - packstack
 
-- debug: msg="Successfully copied answer file. Using {{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }} as IP address."
-  when: answers_file_rx|success
-  tags:
-    - packstack
+- pause: seconds=30 prompt="Pausing for 30s prior to running packstack"
 
 - name: install packstack allinone
   command: packstack --debug --allinone --provision-demo=n
-### Commenting out the answer file until I can fix the IP address dissappearing during deployment
-#  command: packstack --debug --answer-file=answers.txt
+## Commenting out the answer file until I can fix the IP address dissappearing during deployment
+# command: packstack --debug --answer-file=answers.txt
   register: packstack_details
   tags: packstack
 
-- debug: var=hostvars[groups['packstacktest'][0]].ansible_default_ipv4
+- debug: var=hostvars[inventory_hostname].ansible_default_ipv4
   tags:
     - neutron
     - packstack

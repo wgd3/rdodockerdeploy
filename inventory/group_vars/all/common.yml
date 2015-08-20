@@ -1,11 +1,15 @@
 ---
 ### Global config options
 
+### Moved the below varables to host_vars
+
 # select openstack release: juno, kilo
-openstack_release: juno
+#openstack_release: juno
 
 # select rhelosp or rdo bits (only kilo with rdo)
-openstack_bits: rhelosp
+#openstack_bits: rhelosp
+
+#########################################
 
 # ntp servers
 ntp:

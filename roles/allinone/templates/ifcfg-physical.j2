@@ -1,4 +1,4 @@
-DEVICE={{ hostvars[groups['packstacktest'][0]].ansible_default_ipv4.alias }}
+DEVICE={{ hostvars[inventory_hostname].ansible_default_ipv4.alias }}
 BOOTPROTO=none
 ONBOOT=yes
 DEVICETYPE=ovs

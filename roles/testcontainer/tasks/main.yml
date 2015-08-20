@@ -9,7 +9,8 @@
 
 # check for existing glance image
 - name: checking for existing glance image
-  shell: . {{ keystone_filename }}; glance image-list | grep {{ container_image }} | gawk -F' ' '{print $2}'
+# shell: . {{ keystone_filename }}; glance image-list | grep {{ container_image }} | gawk -F' ' '{print $2}'
+  shell: . {{ keystone_filename }}; glance image-show {{ container_image }}
   register: glance_uuid
   ignore_errors: true
   tags:
@@ -28,8 +29,9 @@
   shell: source {{ keystone_filename }} && docker save {{ container_image }} | glance image-create --is-public=True --container-format=docker --disk-format=raw --name {{ glance_imagename }}
   when: glance_uuid|failed
   tags:
-   - docker
-   - container_test
+    - glance
+    - docker
+    - container_test
 
  # check neutron for an existing 'testnet' network
 - name: Check if 'testnet' exists
