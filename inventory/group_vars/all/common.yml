@@ -2,10 +2,10 @@
 ### Global config options
 
 # select openstack release: juno, kilo
-openstack_release: juno
+openstack_release: kilo
 
-# select rhelosp or rdo bits (only kilo with rdo)
-openstack_bits: rhelosp
+# set to 'rdo' - leftover from RHSM integration work
+openstack_bits: rdo
 
 # ntp servers
 ntp:

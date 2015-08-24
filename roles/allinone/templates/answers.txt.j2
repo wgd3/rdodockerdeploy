@@ -80,16 +80,16 @@ CONFIG_DEBUG_MODE={{ config_debug|default(y) }}
 # IP address of the server on which to install OpenStack services
 # specific to the controller role (for example, API servers or
 # dashboard).
-CONFIG_CONTROLLER_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_CONTROLLER_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # List of IP addresses of the servers on which to install the Compute
 # service.
-CONFIG_COMPUTE_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_COMPUTE_HOSTS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # List of IP addresses of the server on which to install the network
 # service such as Compute networking (nova network) or OpenStack
 # Networking (neutron).
-CONFIG_NETWORK_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_NETWORK_HOSTS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' if you want to use VMware vCenter as hypervisor and
 # storage; otherwise, specify 'n'. ['y', 'n']
@@ -125,11 +125,11 @@ CONFIG_VCENTER_CLUSTER_NAME=
 # (Unsupported!) IP address of the server on which to install
 # OpenStack services specific to storage servers such as Image or
 # Block Storage services.
-CONFIG_STORAGE_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_STORAGE_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # (Unsupported!) IP address of the server on which to install
 # OpenStack services specific to OpenStack Data Processing (sahara).
-CONFIG_SAHARA_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_SAHARA_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' to enable the EPEL repository (Extra Packages for
 # Enterprise Linux). ['y', 'n']
@@ -251,7 +251,7 @@ CONFIG_SELFSIGN_CACERT_SUBJECT_MAIL=admin@packstacktest.example.com
 CONFIG_AMQP_BACKEND=rabbitmq
 
 # IP address of the server on which to install the AMQP service.
-CONFIG_AMQP_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_AMQP_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Specify 'y' to enable SSL for the AMQP service. ['y', 'n']
 CONFIG_AMQP_ENABLE_SSL=n
@@ -273,7 +273,7 @@ CONFIG_AMQP_AUTH_PASSWORD=PW_PLACEHOLDER
 # installation was not specified in CONFIG_MARIADB_INSTALL, specify
 # the IP address of an existing database server (a MariaDB cluster can
 # also be specified).
-CONFIG_MARIADB_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_MARIADB_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # User name for the MariaDB administrative user.
 CONFIG_MARIADB_USER=root
@@ -320,7 +320,7 @@ CONFIG_KEYSTONE_SERVICE_NAME=keystone
 CONFIG_KEYSTONE_IDENTITY_BACKEND=sql
 
 # URL for the Identity service LDAP backend.
-CONFIG_KEYSTONE_LDAP_URL=ldap://{{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_KEYSTONE_LDAP_URL=ldap://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # User DN for the Identity service LDAP backend.  Used to bind to the
 # LDAP server if the LDAP server does not allow anonymous
@@ -1095,11 +1095,11 @@ CONFIG_CEILOMETER_KS_PW=7a065263717f4822
 CONFIG_CEILOMETER_COORDINATION_BACKEND=redis
 
 # IP address of the server on which to install MongoDB.
-CONFIG_MONGODB_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_MONGODB_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # IP address of the server on which to install the Redis master
 # server.
-CONFIG_REDIS_MASTER_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_REDIS_MASTER_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Port on which the Redis server(s) listens.
 CONFIG_REDIS_PORT=6379
@@ -1108,13 +1108,13 @@ CONFIG_REDIS_PORT=6379
 CONFIG_REDIS_HA=n
 
 # Hosts on which to install Redis slaves.
-CONFIG_REDIS_SLAVE_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_REDIS_SLAVE_HOSTS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Hosts on which to install Redis sentinel servers.
-CONFIG_REDIS_SENTINEL_HOSTS={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_REDIS_SENTINEL_HOSTS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Host to configure as the Redis coordination sentinel.
-CONFIG_REDIS_SENTINEL_CONTACT_HOST={{ hostvars[groups['packstacktest'][0]]['ansible_default_ipv4']['address'] }}
+CONFIG_REDIS_SENTINEL_CONTACT_HOST={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
 
 # Port on which Redis sentinel servers listen.
 CONFIG_REDIS_SENTINEL_PORT=26379

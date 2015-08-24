@@ -1,1 +1,1 @@
-primary_if: "{{ hostvars[groups['packstacktest'][0]['ansible_default_ipv4']['alias']] }}"
+primary_if: "{{ hostvars[inventory_hostname['ansible_default_ipv4']['alias']] }}"

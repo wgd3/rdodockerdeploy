@@ -4,11 +4,11 @@ neutron_subnetname: testnet-subnet
 neutron_subnetcidr: 10.0.0.0/24
 neutron_ext_net_name: external
 neutron_ext_subnet_name: external-subnet
-neutron_ext_gateway: "{{ hostvars[groups['packstacktest'][0]].ansible_default_ipv4.gateway }}"
+neutron_ext_gateway: "{{ hostvars[inventory_hostname].ansible_default_ipv4.gateway }}"
 neutron_ext_allocation:
-  start: "{{ hostvars[groups['packstacktest'][0]].ansible_default_ipv4.network | replace('.0', '.100') }}"
-  end: "{{ hostvars[groups['packstacktest'][0]].ansible_default_ipv4.network | replace('.0', '.150') }}"
-neutron_ext_subnet_cidr: "{{ hostvars[groups['packstacktest'][0]].ansible_default_ipv4.network }}/24"
+  start: "{{ hostvars[inventory_hostname].ansible_default_ipv4.network | replace('.0', '.175') }}"
+  end: "{{ hostvars[inventory_hostname].ansible_default_ipv4.network | replace('.0', '.185') }}"
+neutron_ext_subnet_cidr: "{{ hostvars[inventory_hostname].ansible_default_ipv4.network }}/24"
 neutron_router_name: testrouter
 neutron_ext_network_type: flat
 neutron_flat_net_name: physnet1

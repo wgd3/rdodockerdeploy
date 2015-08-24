@@ -9,7 +9,7 @@
 
 # check for existing glance image
 - name: checking for existing glance image
-  shell: . {{ keystone_filename }}; glance image-list | grep {{ container_image }} | gawk -F' ' '{print $2}'
+  shell: . {{ keystone_filename }}; glance image-show {{ container_image }}
   register: glance_uuid
   ignore_errors: true
   tags:
@@ -22,10 +22,8 @@
     - glance
     - container_test
 
-# TODO: variable container version number? more efficient
-# using 'shell' instead of 'command' to ensure pipe is used correctly
 - name: Saving container to glance
-  shell: source {{ keystone_filename }} && docker save {{ container_image }} | glance image-create --is-public=True --container-format=docker --disk-format=raw --name {{ glance_imagename }}
+  shell: . {{ keystone_filename }} && docker save {{ container_image }} | glance image-create --is-public=True --container-format=docker --disk-format=raw --name {{ glance_imagename }}
   when: glance_uuid|failed
   tags:
    - docker
@@ -138,8 +136,6 @@
   tags:
     - glance
     - container_test
-
-
 
 - name: get external subnet UUID
   shell: . {{ keystone_filename }}; neutron subnet-list | grep {{ neutron_ext_subnet_name }} | gawk -F' ' '{print $2}'

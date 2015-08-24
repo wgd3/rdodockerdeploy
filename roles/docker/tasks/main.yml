@@ -8,10 +8,6 @@
   command: service docker start
   tags: docker
 
-#- name: test docker
-#  command: docker run hello-world
-#  tags: docker
-
 - name: add nova to docker group
   command: usermod -G docker nova
   tags: docker
@@ -20,52 +16,15 @@
   service: name=openstack-nova-compute state=restarted
   tags: docker
 
-- name: installing novadocker driver (for RDO bits)
+- name: installing novadocker driver
   shell: pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker
-  when: openstack_bits == 'rdo'
   tags: docker
 
-- name: installing novadocker modules (for RDO bits)
+- name: installing novadocker modules
   command: python setup.py install
   args:
     chdir: src/novadocker/
-  when: openstack_bits == 'rdo'
   tags: docker
-
-# Testing for RHELOSP version - need to get the SCL PATH included
-# - name: cloning nova-docker repo from github (for RHELOSP bits)
-#   shell: git clone https://github.com/stackforge/nova-docker.git
-#   when: openstack_bits == 'rhelosp'
-#   tags:
-#     - docker
-
-# - name: installing nova-docker from cloned repo (for RHELOSP bits)
-#   shell: python setup.py install
-#   args:
-#     chdir: nova-docker/
-#   when: openstack_bits == 'rhelosp'
-#   tags:
-#     - docker
-
-- name: running pip install novadocker (for RHELOSP bits)
-  shell: scl enable python27 'pip install -e git+https://github.com/stackforge/nova-docker#egg=novadocker'
-  when: openstack_bits == 'rhelosp'
-  tags:
-    - docker
-
-- name: clone python-pbr from git.openstack.org (for RHELOSP bits)
-  shell: git clone https://git.openstack.org/openstack-dev/pbr
-  when: openstack_bits == 'rhelosp'
-  tags:
-    - docker
-
-- name: installing cloned python-pbr module
-  command: pyhton setup.py install
-  args:
-    chdir: pbr
-  when: openstack_bits == 'rhelosp'
-  tags:
-    - docker
 
 - name: updating compute driver
   ini_file: dest=/etc/nova/nova.conf
